@@ -224,32 +224,4 @@ CERTIFICATIONS = {
         "Docker Certified Associate",
         "FastAPI Advanced Course"
     ],
-    "AI Engineer": [
-        "DeepLearning.AI LangChain Course",
-        "OpenAI API Developer Course",
-        "AWS Certified AI Practitioner",
-        "Hugging Face NLP Course",
-        "Vector Database Fundamentals"
-    ],
-    "Backend Developer": [
-        "AWS Certified Developer Associate",
-        "Docker Certified Associate",
-        "Kubernetes CKA Certification",
-        "Spring Professional Certification",
-        "MongoDB Developer Certification"
-    ],
-    "Frontend Developer": [
-        "Meta Front-End Developer Certificate",
-        "AWS Certified Cloud Practitioner",
-        "React Advanced Patterns Course",
-        "TypeScript Deep Dive",
-        "Google UX Design Certificate"
-    ],
-    "DevOps Engineer": [
-        "AWS Solutions Architect Associate",
-        "Certified Kubernetes Administrator (CKA)",
-        "HashiCorp Terraform Associate",
-        "Docker Certified Associate",
-        "Linux Foundation LFCS"
-    ]
-}
+ 
