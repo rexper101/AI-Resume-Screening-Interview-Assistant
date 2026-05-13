@@ -218,3 +218,124 @@ def extract_experience_years(text: str) -> Dict[str, any]:
         from datetime import datetime
         current_year = datetime.now().year
         for start, end in ranges:
+            start_year = int(start)
+            end_year = current_year if end.lower() in ['present', 'current'] else int(end)
+            total += max(0, end_year - start_year)
+        experience_info["total_years"] = min(total, 40)  # cap at 40
+
+    # Determine seniority level
+    years = experience_info["total_years"]
+    if years == 0:
+        level = "Fresher/Student"
+    elif years <= 1:
+        level = "Entry Level"
+    elif years <= 3:
+        level = "Junior"
+    elif years <= 5:
+        level = "Mid-Level"
+    elif years <= 8:
+        level = "Senior"
+    else:
+        level = "Lead/Principal"
+
+    experience_info["estimated_level"] = level
+    return experience_info
+
+
+def extract_education_info(text: str) -> Dict[str, any]:
+    """
+    Extract education details from resume text.
+
+    Args:
+        text: Resume text
+
+    Returns:
+        Dict with education information
+    """
+    edu_info = {
+        "degree": None,
+        "field": None,
+        "institution": None,
+        "gpa": None,
+        "graduation_year": None
+    }
+
+    text_lower = text.lower()
+
+    # Detect degree level
+    degree_patterns = [
+        (r'\b(ph\.?d\.?|doctorate|doctor of)\b', "PhD"),
+        (r'\b(m\.?s\.?|master\'?s?|msc|m\.?tech|mba)\b', "Master's"),
+        (r'\b(b\.?s\.?|bachelor\'?s?|bsc|b\.?tech|b\.?e\.?|undergraduate)\b', "Bachelor's"),
+        (r'\b(associate\'?s?|a\.?s\.?|a\.?a\.?)\b', "Associate's"),
+        (r'\b(diploma|certificate)\b', "Diploma/Certificate"),
+    ]
+
+    for pattern, degree_name in degree_patterns:
+        if re.search(pattern, text_lower):
+            edu_info["degree"] = degree_name
+            break
+
+    # Common CS/Data Science fields
+    field_keywords = [
+        "computer science", "data science", "information technology",
+        "software engineering", "electrical engineering", "mathematics",
+        "statistics", "machine learning", "artificial intelligence",
+        "information systems", "computer engineering"
+    ]
+    for field in field_keywords:
+        if field in text_lower:
+            edu_info["field"] = field.title()
+            break
+
+    # GPA
+    gpa_pattern = r'gpa:?\s*(\d\.\d+)'
+    gpa_match = re.search(gpa_pattern, text_lower)
+    if gpa_match:
+        edu_info["gpa"] = float(gpa_match.group(1))
+
+    # Graduation year
+    year_pattern = r'\b(20\d{2})\b'
+    years = re.findall(year_pattern, text)
+    if years:
+        edu_info["graduation_year"] = max(years)
+
+    return edu_info
+
+
+def extract_all(text: str, sections: dict) -> dict:
+    """
+    Main extraction function combining all extractors.
+
+    Args:
+        text: Full resume text
+        sections: Detected sections from resume_parser
+
+    Returns:
+        Complete skills and metadata extraction result
+    """
+    # Extract skills
+    all_skills = extract_skills_by_keyword(text)
+    section_skills = extract_skills_by_section(sections)
+    categorized = categorize_skills(all_skills)
+    frequency = get_skill_frequency(all_skills, text)
+
+    # Extract metadata
+    experience_info = extract_experience_years(text)
+    education_info = extract_education_info(text)
+
+    # Skills from skills section get a "primary skill" flag
+    primary_skills = section_skills.get("skills", [])
+    secondary_skills = [s for s in all_skills if s not in primary_skills]
+
+    return {
+        "all_skills": all_skills,
+        "primary_skills": primary_skills,
+        "secondary_skills": secondary_skills,
+        "categorized_skills": categorized,
+        "skill_frequency": frequency,
+        "section_skills": section_skills,
+        "experience_info": experience_info,
+        "education_info": education_info,
+        "total_skills_count": len(all_skills)
+    }
