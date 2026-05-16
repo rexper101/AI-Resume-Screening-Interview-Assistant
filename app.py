@@ -1237,7 +1237,6 @@ def page_skill_analysis():
                 Field: <b>{edu.get('field', 'Not detected')}</b><br>
                 GPA: <b>{edu.get('gpa', 'Not detected')}</b><br>
                 Year: <b>{edu.get('graduation_year', 'Not detected')}</b>
-            </div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1245,13 +1244,10 @@ def page_skill_analysis():
         st.markdown("#### Experience Info")
         exp = skill_data.get("experience_info", {})
         st.markdown(f"""
-        <div style='background: var(--bg-muted); border-radius: 12px; padding: 16px;
-                    border: 1px solid #E2E8F0;'>
-            <div style='color: var(--text-muted); font-size: 0.9rem; line-height: 2;'>
+        <div class='info-panel'>
                 Level: <b>{exp.get('estimated_level', 'Unknown')}</b><br>
                 Years: <b>{exp.get('total_years', 0)} years estimated</b><br>
                 Positions: <b>{len(exp.get('year_ranges', []))} detected</b><br>
-            </div>
         </div>
         """, unsafe_allow_html=True)
 
