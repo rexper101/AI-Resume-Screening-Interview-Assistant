@@ -12,87 +12,164 @@ from pathlib import Path
 
 # ── Page Configuration ─────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="AI Resume Screening Assistant",
-    page_icon="R",
+    page_title="ResumeAI — Smart Resume Analysis",
+    page_icon="📋",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
         "Get Help": "https://github.com/yourusername/ai-resume-screener",
-        "About": "AI Resume Screening & Interview Assistant v1.0"
+        "About": "ResumeAI — AI Resume Screening & Interview Assistant v1.0"
     }
 )
 
 # ── Custom CSS Styling ─────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@400;500;600;700&display=swap');
 
-    /* ── Animations ─── */
+    :root {
+        --bg-deep: #070B14;
+        --bg-surface: #0F1629;
+        --bg-card: rgba(19, 27, 46, 0.72);
+        --border: rgba(20, 184, 166, 0.14);
+        --border-hover: rgba(20, 184, 166, 0.38);
+        --accent: #14B8A6;
+        --accent-2: #06B6D4;
+        --accent-soft: rgba(20, 184, 166, 0.12);
+        --text: #F1F5F9;
+        --text-muted: #94A3B8;
+        --text-dim: #64748B;
+        --radius: 14px;
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
     @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(18px); }
+        from { opacity: 0; transform: translateY(14px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.6;} }
-    @keyframes shimmer {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
+    @keyframes glow {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.75; }
     }
 
-    /* ── Global ─── */
     .stApp {
-        background: linear-gradient(160deg, #0B0F1A 0%, #101729 40%, #0E1525 100%);
-        font-family: 'Inter', sans-serif;
+        background:
+            radial-gradient(ellipse 80% 50% at 50% -20%, rgba(20, 184, 166, 0.12), transparent),
+            radial-gradient(ellipse 60% 40% at 100% 0%, rgba(139, 92, 246, 0.08), transparent),
+            linear-gradient(165deg, var(--bg-deep) 0%, var(--bg-surface) 50%, #0B1220 100%);
+        font-family: 'DM Sans', sans-serif;
     }
 
-    /* ── Sidebar ─── */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #101729 0%, #0B0F1A 100%);
-        border-right: 1px solid rgba(20,184,166,0.12);
+        background: linear-gradient(180deg, #0D1324 0%, var(--bg-deep) 100%) !important;
+        border-right: 1px solid var(--border);
     }
-    [data-testid="stSidebar"] .stMarkdown { color: #CBD5E1; }
+    [data-testid="stSidebar"] .stMarkdown { color: var(--text-muted); }
+    [data-testid="stSidebar"] [data-testid="stRadio"] label p {
+        font-size: 0.9rem !important;
+        font-weight: 500 !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div {
+        gap: 2px;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadio"] label {
+        background: transparent;
+        border-radius: 10px;
+        padding: 8px 12px;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+        background: var(--accent-soft);
+        border-color: var(--border);
+    }
+    [data-testid="stSidebar"] [data-testid="stRadio"] label[data-checked="true"],
+    [data-testid="stSidebar"] [data-testid="stRadio"] div[aria-checked="true"] label {
+        background: rgba(20, 184, 166, 0.14) !important;
+        border-color: var(--border-hover) !important;
+        color: #5EEAD4 !important;
+    }
 
-    .main .block-container { padding-top: 1rem; max-width: 1400px; }
+    .main .block-container {
+        padding: 1.5rem 2rem 3rem;
+        max-width: 1320px;
+        animation: fadeInUp 0.35s ease both;
+    }
 
-    /* ── Cards ─── */
+    .glass-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+    }
+
     .metric-card {
-        background: rgba(20,184,166,0.06);
-        border: 1px solid rgba(20,184,166,0.18);
-        border-radius: 14px;
-        padding: 20px 24px;
+        background: var(--bg-card);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 22px 20px;
         text-align: center;
-        transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
-        animation: fadeInUp .5s ease both;
+        transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        animation: fadeInUp 0.45s ease both;
     }
     .metric-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(20,184,166,0.45);
-        box-shadow: 0 8px 30px rgba(20,184,166,0.10);
+        transform: translateY(-3px);
+        border-color: var(--border-hover);
+        box-shadow: 0 12px 40px rgba(20, 184, 166, 0.08);
     }
     .metric-card .metric-value {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 2.5rem; font-weight: 700;
-        background: linear-gradient(135deg, #14B8A6, #06B6D4);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        background-clip: text; line-height: 1.1;
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.25rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.15;
     }
     .metric-card .metric-label {
-        color: #64748B; font-size: 0.82rem; font-weight: 500;
-        letter-spacing: 0.06em; text-transform: uppercase; margin-top: 6px;
+        color: var(--text-dim);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 8px;
     }
     .metric-card .metric-icon {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.1rem; font-weight: 700; color: rgba(20,184,166,0.4);
-        margin-bottom: 6px; letter-spacing: 0.05em;
+        font-size: 1.35rem;
+        margin-bottom: 8px;
+        line-height: 1;
     }
 
-    /* ── Section Headers ─── */
+    .page-header {
+        margin-bottom: 28px;
+        animation: fadeInUp 0.4s ease both;
+    }
+    .page-header h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0 0 6px 0;
+        letter-spacing: -0.02em;
+    }
+    .page-header p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin: 0;
+        line-height: 1.5;
+    }
     .section-header {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.5rem; font-weight: 700; color: #E2E8F0;
-        padding: 12px 0;
-        border-bottom: 2px solid rgba(20,184,166,0.25);
-        margin-bottom: 20px;
-        animation: fadeInUp .4s ease both;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: var(--text);
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 22px;
     }
 
     /* ── Skill Tags ─── */
@@ -138,26 +215,108 @@ st.markdown("""
         transition: width .7s cubic-bezier(.4,0,.2,1);
     }
 
-    /* ── Hero ─── */
     .hero-section {
-        text-align: center; padding: 48px 24px;
-        background: linear-gradient(135deg, rgba(20,184,166,0.08) 0%, rgba(6,182,212,0.04) 100%);
+        text-align: center;
+        padding: 56px 32px 48px;
+        background:
+            linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(6, 182, 212, 0.05) 50%, rgba(139, 92, 246, 0.06) 100%);
         border-radius: 20px;
-        border: 1px solid rgba(20,184,166,0.12);
-        margin-bottom: 30px;
-        animation: fadeInUp .5s ease both;
+        border: 1px solid var(--border);
+        margin-bottom: 32px;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease both;
+    }
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120%;
+        height: 100%;
+        background: radial-gradient(ellipse, rgba(20, 184, 166, 0.15) 0%, transparent 70%);
+        animation: glow 4s ease-in-out infinite;
+        pointer-events: none;
+    }
+    .hero-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        border: 1px solid var(--border);
+        color: #5EEAD4;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 18px;
+        position: relative;
     }
     .hero-title {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 2.8rem; font-weight: 700;
-        background: linear-gradient(135deg, #14B8A6, #06B6D4, #8B5CF6);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        background-clip: text; line-height: 1.2;
+        font-family: 'Outfit', sans-serif;
+        font-size: clamp(2rem, 4vw, 2.75rem);
+        font-weight: 700;
+        background: linear-gradient(135deg, #F8FAFC 0%, #5EEAD4 45%, #06B6D4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.15;
+        position: relative;
+        letter-spacing: -0.03em;
     }
     .hero-subtitle {
-        color: #94A3B8; font-size: 1.1rem; margin-top: 12px;
-        max-width: 600px; margin-left: auto; margin-right: auto;
+        color: var(--text-muted);
+        font-size: 1.05rem;
+        margin-top: 14px;
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.65;
+        position: relative;
     }
+    .feature-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px 18px;
+        height: 100%;
+        transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-2px);
+    }
+    .feature-num {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+        margin-bottom: 10px;
+    }
+    .feature-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        color: var(--text);
+        font-size: 1rem;
+        margin-bottom: 6px;
+    }
+    .feature-desc {
+        color: var(--text-dim);
+        font-size: 0.82rem;
+        line-height: 1.5;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 64px 24px;
+        background: var(--bg-card);
+        border: 1px dashed var(--border);
+        border-radius: 18px;
+        color: var(--text-dim);
+    }
+    .empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.7; }
+    .empty-state-title { font-size: 1.1rem; color: var(--text-muted); font-weight: 500; }
 
     /* ── Feedback ─── */
     .feedback-positive { color: #6EE7B7; font-size: 0.9rem; padding: 4px 0; }
@@ -225,16 +384,22 @@ st.markdown("""
         font-family: 'Inter', sans-serif; font-size: 0.875rem;
     }
 
-    .sidebar-nav-item {
-        display: flex; align-items: center;
-        padding: 10px 16px; border-radius: 10px;
-        color: #94A3B8; font-size: 0.95rem; font-weight: 500;
-        cursor: pointer; transition: all .2s; margin: 2px 0;
+    .nav-group-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        margin: 18px 0 8px 4px;
     }
-    .sidebar-nav-item:hover { background: rgba(20,184,166,0.12); color: #E2E8F0; }
-    .sidebar-nav-item.active {
-        background: rgba(20,184,166,0.18); color: #5EEAD4;
-        border-left: 3px solid #14B8A6;
+    .brand-logo {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.35rem;
+        margin: 0 auto 12px;
+        box-shadow: 0 4px 20px rgba(20, 184, 166, 0.25);
     }
 
     .question-box {
@@ -273,11 +438,93 @@ st.markdown("""
         border: 1px solid rgba(16,185,129,0.25);
     }
 
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    .stDeployButton {display: none;}
+    h1, h2, h3 { font-family: 'Outfit', sans-serif !important; }
+    .stMarkdown h3 { color: var(--text) !important; }
+
+    #MainMenu { visibility: hidden; }
+    footer { visibility: hidden; }
+    header[data-testid="stHeader"] { background: transparent; }
+    .stDeployButton { display: none; }
 </style>
 """, unsafe_allow_html=True)
+
+
+# ── UI Components ──────────────────────────────────────────────────────────────
+PAGE_META = {
+    "Home": ("Home", "Your AI-powered career intelligence hub"),
+    "Upload & Analyze": ("Upload & Analyze", "Parse your resume and run the full pipeline"),
+    "ATS Score": ("ATS Score", "Applicant tracking system compatibility"),
+    "Job Matches": ("Job Matches", "Roles ranked by fit and skill overlap"),
+    "Skill Analysis": ("Skill Analysis", "Extracted skills and categories"),
+    "Skill Gap": ("Skill Gap", "What to learn for your target role"),
+    "Role Predictor": ("Role Predictor", "ML-based career path prediction"),
+    "Interview Prep": ("Interview Prep", "Personalized practice questions"),
+    "Analytics Dashboard": ("Analytics", "All charts and metrics in one view"),
+}
+
+NAV_GROUPS = [
+    ("Overview", ["Home"]),
+    ("Analyze", ["Upload & Analyze", "ATS Score"]),
+    ("Insights", ["Job Matches", "Skill Analysis", "Skill Gap", "Role Predictor"]),
+    ("Prepare", ["Interview Prep", "Analytics Dashboard"]),
+]
+
+NAV_ICONS = {
+    "Home": "🏠",
+    "Upload & Analyze": "📄",
+    "ATS Score": "📊",
+    "Job Matches": "💼",
+    "Skill Analysis": "🧠",
+    "Skill Gap": "🎯",
+    "Role Predictor": "🤖",
+    "Interview Prep": "🎤",
+    "Analytics Dashboard": "📈",
+}
+
+
+def render_page_header(page_key: str):
+    title, subtitle = PAGE_META.get(page_key, (page_key, ""))
+    st.markdown(f"""
+    <div class='page-header'>
+        <h1>{title}</h1>
+        <p>{subtitle}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_metric_card(icon: str, value, label: str, value_size: str = "2.25rem"):
+    st.markdown(f"""
+    <div class='metric-card'>
+        <div class='metric-icon'>{icon}</div>
+        <div class='metric-value' style='font-size:{value_size};'>{value}</div>
+        <div class='metric-label'>{label}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_empty_state(icon: str, title: str, hint: str = ""):
+    hint_html = f"<p style='margin-top:8px;font-size:0.88rem;'>{hint}</p>" if hint else ""
+    st.markdown(f"""
+    <div class='empty-state'>
+        <div class='empty-state-icon'>{icon}</div>
+        <div class='empty-state-title'>{title}</div>
+        {hint_html}
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def require_analysis(page_name: str = "this section") -> bool:
+    if not st.session_state.analysis_done:
+        render_empty_state(
+            "📋",
+            f"No analysis yet",
+            f"Upload a resume on Upload & Analyze, then open {page_name}."
+        )
+        if st.button("Go to Upload & Analyze", type="primary"):
+            st.session_state.current_page = "Upload & Analyze"
+            st.rerun()
+        return False
+    return True
 
 
 # ── Session State Initialization ───────────────────────────────────────────────
@@ -348,91 +595,74 @@ mods = load_modules()
 # ── Sidebar Navigation ─────────────────────────────────────────────────────────
 def render_sidebar():
     with st.sidebar:
-        # Logo/Brand
         st.markdown("""
-        <div style='text-align:center; padding: 20px 0 10px;'>
-            <div style='font-family: Space Grotesk, sans-serif; font-size: 1.4rem; 
-                        font-weight: 700; color: #E2E8F0; letter-spacing: -0.02em;'>ResumeAI</div>
-            <div style='color: #64748B; font-size: 0.75rem; letter-spacing: 0.1em;'>
-                INTELLIGENT SCREENING
-            </div>
+        <div style='text-align:center; padding: 8px 0 16px;'>
+            <div class='brand-logo'>&#128203;</div>
+            <div style='font-family: Outfit, sans-serif; font-size: 1.35rem;
+                        font-weight: 700; color: #F1F5F9;'>ResumeAI</div>
+            <div style='color: #64748B; font-size: 0.7rem; letter-spacing: 0.14em;
+                        text-transform: uppercase; margin-top: 4px;'>Career Intelligence</div>
         </div>
-        <hr style='border-color: rgba(20,184,166,0.15);'>
         """, unsafe_allow_html=True)
 
-        # Navigation items
-        nav_pages = [
-            ("", "Home", "Overview & Quick Start"),
-            ("", "Upload & Analyze", "Parse your resume"),
-            ("", "ATS Score", "ATS compatibility check"),
-            ("", "Job Matches", "Role recommendations"),
-            ("", "Skill Analysis", "Skills breakdown"),
-            ("", "Skill Gap", "Gap analysis"),
-            ("", "Role Predictor", "ML predictions"),
-            ("", "Interview Prep", "Practice questions"),
-            ("", "Analytics Dashboard", "Full analytics view"),
-        ]
-
         current = st.session_state.get("current_page", "Home")
+        for group_name, pages in NAV_GROUPS:
+            st.markdown(f"<div class='nav-group-label'>{group_name}</div>", unsafe_allow_html=True)
+            for page in pages:
+                icon = NAV_ICONS.get(page, "\u2022")
+                label = f"{icon}  {page}"
+                if current == page:
+                    st.markdown(
+                        f"<div style='padding:8px 12px;margin:2px 0;border-radius:10px;"
+                        f"background:rgba(20,184,166,0.14);border:1px solid rgba(20,184,166,0.35);"
+                        f"color:#5EEAD4;font-size:0.88rem;font-weight:600;'>{label}</div>",
+                        unsafe_allow_html=True,
+                    )
+                elif st.button(label, key=f"nav_{page}", use_container_width=True):
+                    st.session_state.current_page = page
+                    st.rerun()
 
-        for icon, page, desc in nav_pages:
-            is_active = current == page
-            style = "active" if is_active else ""
-            if st.button(
-                f"{page}",
-                key=f"nav_{page}",
-                use_container_width=True,
-                type="secondary" if not is_active else "primary"
-            ):
-                st.session_state.current_page = page
-                st.rerun()
+        st.markdown("<hr style='border-color:rgba(20,184,166,0.12);margin:16px 0;'>", unsafe_allow_html=True)
 
-        # Status panel
-        st.markdown("<hr>", unsafe_allow_html=True)
         if st.session_state.analysis_done:
             skills_count = len(st.session_state.extracted_skills or [])
             ats_score = st.session_state.ats_result["total_score"] if st.session_state.ats_result else 0
             top_match = st.session_state.recommendations[0]["match_percentage"] if st.session_state.recommendations else 0
-
             st.markdown(f"""
-            <div style='padding: 12px; background: rgba(16,185,129,0.1); 
-                        border: 1px solid rgba(16,185,129,0.3); border-radius: 12px;'>
-                <div style='color: #6EE7B7; font-size: 0.8rem; font-weight: 600; 
-                            text-transform: uppercase; letter-spacing: 0.05em;'>
-                    Analysis Complete
-                </div>
-                <div style='margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;'>
-                    <span style='background: rgba(20,184,166,0.15); color: #5EEAD4; 
-                                 padding: 3px 10px; border-radius: 12px; font-size: 0.78rem;'>
-                        {skills_count} Skills
-                    </span>
-                    <span style='background: rgba(20,184,166,0.15); color: #5EEAD4; 
-                                 padding: 3px 10px; border-radius: 12px; font-size: 0.78rem;'>
-                        ATS: {ats_score}/100
-                    </span>
-                    <span style='background: rgba(20,184,166,0.15); color: #5EEAD4; 
-                                 padding: 3px 10px; border-radius: 12px; font-size: 0.78rem;'>
-                        Match: {top_match}%
-                    </span>
+            <div class='glass-card' style='padding:14px;'>
+                <div style='color:#6EE7B7;font-size:0.72rem;font-weight:700;
+                            letter-spacing:0.08em;text-transform:uppercase;'>Analysis ready</div>
+                <div style='margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;'>
+                    <span style='background:rgba(20,184,166,0.12);color:#5EEAD4;padding:4px 10px;
+                                 border-radius:8px;font-size:0.75rem;'>{skills_count} skills</span>
+                    <span style='background:rgba(20,184,166,0.12);color:#5EEAD4;padding:4px 10px;
+                                 border-radius:8px;font-size:0.75rem;'>ATS {ats_score}</span>
+                    <span style='background:rgba(20,184,166,0.12);color:#5EEAD4;padding:4px 10px;
+                                 border-radius:8px;font-size:0.75rem;'>{top_match}% match</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
+            if st.button("Start over", use_container_width=True):
+                for key in ("resume_text", "parsed_resume", "extracted_skills", "skill_data",
+                            "recommendations", "ats_result", "prediction_result",
+                            "interview_pack", "skill_gap"):
+                    st.session_state[key] = None
+                st.session_state.analysis_done = False
+                st.session_state.current_page = "Upload & Analyze"
+                st.rerun()
         else:
             st.markdown("""
-            <div style='padding: 12px; background: rgba(99,102,241,0.08); 
-                        border: 1px solid rgba(20,184,166,0.15); border-radius: 12px;
-                        color: #64748B; font-size: 0.82rem;'>
-                Upload a resume to begin analysis
+            <div class='glass-card' style='padding:14px;color:#94A3B8;font-size:0.82rem;line-height:1.5;'>
+                Upload a resume to unlock ATS scoring, job matches, and interview prep.
             </div>
             """, unsafe_allow_html=True)
 
-        # Footer
         st.markdown("""
-        <div style='margin-top: 20px; text-align: center; color: #475569; font-size: 0.72rem;'>
-            Built with Python & Streamlit<br>
-            v1.0 | AI Resume Assistant
+        <div style='margin-top:24px;text-align:center;color:#475569;font-size:0.7rem;line-height:1.6;'>
+            Python &middot; Streamlit &middot; scikit-learn<br>v1.0
         </div>
         """, unsafe_allow_html=True)
+
 
 
 # ── Helper: Run Analysis ───────────────────────────────────────────────────────

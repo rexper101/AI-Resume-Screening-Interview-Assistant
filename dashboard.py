@@ -11,23 +11,23 @@ import numpy as np
 from typing import Dict, List, Optional
 
 
-# ── Color Palette ─────────────────────────────────────────────────────────────
+# ── Color Palette (aligned with app.py theme) ─────────────────────────────────
 COLORS = {
-    "primary": "#8B5CF6",      # Violet
-    "secondary": "#6366F1",    # Indigo
-    "accent": "#EC4899",       # Pink
-    "success": "#10B981",      # Emerald
-    "warning": "#F59E0B",      # Amber
-    "danger": "#EF4444",       # Red
-    "info": "#3B82F6",         # Blue
-    "bg_dark": "#09090B",
-    "card_bg": "#18181B",
-    "text": "#F8FAFC",
+    "primary": "#14B8A6",      # Teal
+    "secondary": "#06B6D4",    # Cyan
+    "accent": "#8B5CF6",       # Violet accent
+    "success": "#10B981",
+    "warning": "#F59E0B",
+    "danger": "#EF4444",
+    "info": "#3B82F6",
+    "bg_dark": "#0B0F1A",
+    "card_bg": "#131B2E",
+    "text": "#F1F5F9",
 }
 
 CHART_COLORS = [
-    "#8B5CF6", "#6366F1", "#EC4899", "#10B981", "#F59E0B",
-    "#3B82F6", "#A78BFA", "#F97316", "#84CC16", "#06B6D4"
+    "#14B8A6", "#06B6D4", "#8B5CF6", "#10B981", "#F59E0B",
+    "#3B82F6", "#5EEAD4", "#F97316", "#84CC16", "#A78BFA"
 ]
 
 CHART_TEMPLATE = {
