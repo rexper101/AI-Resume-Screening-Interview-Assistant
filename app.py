@@ -71,18 +71,26 @@ st.markdown("""
         box-shadow: 2px 0 16px rgba(15, 23, 42, 0.04);
     }
     [data-testid="stSidebar"] .stMarkdown { color: var(--text-muted); }
-    [data-testid="stSidebar"] .stButton > button {
+    [data-testid="stSidebar"] .stButton > button,
+    [data-testid="stSidebar"] .stButton > button[kind="secondary"],
+    [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"] {
         background: #FFFFFF !important;
-        color: var(--text) !important;
+        color: #0F172A !important;
         border: 1px solid #E2E8F0 !important;
         box-shadow: none !important;
         font-weight: 500 !important;
     }
-    [data-testid="stSidebar"] .stButton > button:hover {
-        background: var(--accent-soft) !important;
-        border-color: var(--border-hover) !important;
-        color: var(--accent-text) !important;
+    [data-testid="stSidebar"] .stButton > button:hover,
+    [data-testid="stSidebar"] .stButton > button:focus {
+        background: #F0FDFA !important;
+        border-color: #0D9488 !important;
+        color: #0F766E !important;
         transform: none !important;
+        opacity: 1 !important;
+    }
+    [data-testid="stSidebar"] .stButton > button:hover *,
+    [data-testid="stSidebar"] .stButton > button:focus * {
+        color: #0F766E !important;
     }
     .sidebar-title { font-family: Outfit, sans-serif; font-size: 1.35rem; font-weight: 700; color: var(--text); }
     .sidebar-tagline { color: var(--text-dim); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 4px; }
@@ -368,32 +376,78 @@ st.markdown("""
     }
     [data-testid="stFileUploader"]:hover { border-color: var(--accent); background: #ECFEFF; }
 
-    .main .stButton > button[kind="primary"],
-    .main .stButton > button[data-testid="baseButton-primary"] {
+    /* Primary buttons */
+    .stButton > button[kind="primary"],
+    .stButton > button[data-testid="baseButton-primary"] {
         background: linear-gradient(135deg, #0D9488, #0891B2) !important;
-        color: white !important;
+        color: #FFFFFF !important;
         border: none !important;
-        border-radius: 10px;
-        font-weight: 600;
-        box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25) !important;
     }
-    .main .stButton > button[kind="primary"]:hover,
-    .main .stButton > button[data-testid="baseButton-primary"]:hover {
-        opacity: 0.95;
+    .stButton > button[kind="primary"]:hover,
+    .stButton > button[kind="primary"]:focus,
+    .stButton > button[data-testid="baseButton-primary"]:hover,
+    .stButton > button[data-testid="baseButton-primary"]:focus {
+        background: linear-gradient(135deg, #0F766E, #0E7490) !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        opacity: 1 !important;
         transform: translateY(-1px);
-        box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
+        box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35) !important;
     }
-    .main .stButton > button:not([kind="primary"]) {
+    .stButton > button[kind="primary"]:hover *,
+    .stButton > button[kind="primary"]:focus *,
+    .stButton > button[data-testid="baseButton-primary"]:hover *,
+    .stButton > button[data-testid="baseButton-primary"]:focus * {
+        color: #FFFFFF !important;
+    }
+
+    /* Secondary / default buttons */
+    .stButton > button[kind="secondary"],
+    .stButton > button[data-testid="baseButton-secondary"] {
         background: #FFFFFF !important;
-        color: var(--text) !important;
-        border: 1px solid #E2E8F0 !important;
-        border-radius: 10px;
-        font-weight: 500;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 10px !important;
+        font-weight: 500 !important;
         box-shadow: none !important;
     }
-    .main .stButton > button:not([kind="primary"]):hover {
-        background: var(--bg-muted) !important;
-        border-color: var(--text-muted) !important;
+    .stButton > button[kind="secondary"]:hover,
+    .stButton > button[kind="secondary"]:focus,
+    .stButton > button[data-testid="baseButton-secondary"]:hover,
+    .stButton > button[data-testid="baseButton-secondary"]:focus {
+        background: #F0FDFA !important;
+        color: #0F766E !important;
+        border-color: #0D9488 !important;
+        opacity: 1 !important;
+    }
+    .stButton > button[kind="secondary"]:hover *,
+    .stButton > button[kind="secondary"]:focus *,
+    .stButton > button[data-testid="baseButton-secondary"]:hover *,
+    .stButton > button[data-testid="baseButton-secondary"]:focus * {
+        color: #0F766E !important;
+    }
+
+    /* Download button */
+    .stDownloadButton > button,
+    .stDownloadButton > button[kind="secondary"],
+    .stDownloadButton > button[data-testid="baseButton-secondary"] {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    .stDownloadButton > button:hover,
+    .stDownloadButton > button:focus {
+        background: #F0FDFA !important;
+        color: #0F766E !important;
+        border-color: #0D9488 !important;
+        opacity: 1 !important;
+    }
+    .stDownloadButton > button:hover *,
+    .stDownloadButton > button:focus * {
+        color: #0F766E !important;
     }
 
     .stSelectbox > div > div {
