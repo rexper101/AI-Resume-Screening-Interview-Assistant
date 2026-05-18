@@ -140,4 +140,189 @@ def detect_sections(text: str) -> dict:
     # Convert lists to strings
     return {k: '\n'.join(v) for k, v in sections.items()}
 
+
+def extract_contact_info(text: str) -> dict:
+    """
+    Extract contact information from resume text.
+
+    Args:
+        text: Resume text
+
+    Returns:
+        Dict with name, email, phone, linkedin, github
+    """
+    contact = {
+        "email": None,
+        "phone": None,
+        "linkedin": None,
+        "github": None,
+        "location": None,
+    }
+
+    # Email
+    email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    email_match = re.search(email_pattern, text)
+    if email_match:
+        contact["email"] = email_match.group()
+
+    # Phone
+    phone_pattern = r'(\+?[\d\s\-\(\)]{10,15})'
+    phone_match = re.search(phone_pattern, text)
+    if phone_match:
+        contact["phone"] = phone_match.group().strip()
+
+    # LinkedIn
+    linkedin_pattern = r'linkedin\.com/in/[\w\-]+'
+    linkedin_match = re.search(linkedin_pattern, text, re.IGNORECASE)
+    if linkedin_match:
+        contact["linkedin"] = linkedin_match.group()
+
+    # GitHub
+    github_pattern = r'github\.com/[\w\-]+'
+    github_match = re.search(github_pattern, text, re.IGNORECASE)
+    if github_match:
+        contact["github"] = github_match.group()
+
+    # Location (city, state/country)
+    location_pattern = r'\b([A-Z][a-z]+(?:\s[A-Z][a-z]+)*,\s*(?:[A-Z]{2}|[A-Z][a-z]+))\b'
+    location_match = re.search(location_pattern, text)
+    if location_match:
+        contact["location"] = location_match.group()
+
+    return contact
+
+
+def calculate_resume_stats(text: str) -> dict:
+    """
+    Calculate basic statistics about the resume.
+
+    Args:
+        text: Resume text
+
+    Returns:
+        Dict with word count, page estimate, sections found
+    """
+    words = text.split()
+    sections = detect_sections(text)
+
+    # Estimate pages (average 400 words per page for resumes)
+    estimated_pages = max(1, round(len(words) / 400, 1))
+
+    # Count years of experience from text
+    year_matches = re.findall(r'\b(19|20)(\d{2})\b', text)
+    unique_years = sorted(set([int(a + b) for a, b in year_matches]))
+
+    has_sections = {
+        "has_summary": "summary" in sections and len(sections.get("summary", "")) > 20,
+        "has_experience": "experience" in sections and len(sections.get("experience", "")) > 20,
+        "has_education": "education" in sections and len(sections.get("education", "")) > 20,
+        "has_skills": "skills" in sections and len(sections.get("skills", "")) > 10,
+        "has_projects": "projects" in sections and len(sections.get("projects", "")) > 20,
+        "has_certifications": "certifications" in sections and len(sections.get("certifications", "")) > 10,
+    }
+
+    return {
+        "word_count": len(words),
+        "char_count": len(text),
+        "estimated_pages": estimated_pages,
+        "sections_detected": [k for k, v in has_sections.items() if v],
+        **has_sections
+    }
+
+
+def parse_resume(file) -> dict:
+    """
+    Main function to parse a resume file and return structured data.
+
+    Args:
+        file: Uploaded file object from Streamlit
+
+    Returns:
+        Dict containing all parsed resume data
+    """
+    # Extract raw text
+    raw_text = extract_text_from_pdf(file)
+
+    if not raw_text.strip():
+        raise ValueError("No text could be extracted from the PDF. The file may be scanned or image-based.")
+
+    # Clean the text
+    cleaned_text = clean_resume_text(raw_text)
+
+    # Extract structured data
+    sections = detect_sections(cleaned_text)
+    contact_info = extract_contact_info(cleaned_text)
+    stats = calculate_resume_stats(cleaned_text)
+
+    return {
+        "raw_text": raw_text,
+        "cleaned_text": cleaned_text,
+        "sections": sections,
+        "contact_info": contact_info,
+        "stats": stats
+    }
+
+
+def get_sample_resume_text() -> str:
+    """
+    Returns a sample resume text for demo purposes when no file is uploaded.
+    """
+    return """
+John Smith
+john.smith@email.com | +1-555-0123 | linkedin.com/in/johnsmith | github.com/johnsmith
+San Francisco, CA
+
+PROFESSIONAL SUMMARY
+Passionate Data Scientist with 3+ years of experience building machine learning models and
+data pipelines. Expertise in Python, SQL, and cloud technologies. Proven track record of
+delivering end-to-end ML solutions from data collection to production deployment.
+
+WORK EXPERIENCE
+
+Senior Data Scientist | TechCorp Inc. | 2022 - Present
+- Built and deployed machine learning models for customer churn prediction (92% accuracy)
+- Developed NLP pipeline for sentiment analysis using BERT and TensorFlow
+- Reduced data processing time by 60% using Apache Spark and AWS EMR
+- Mentored junior data scientists and conducted code reviews
+
+Data Scientist | DataStartup | 2021 - 2022
+- Created recommendation system using collaborative filtering and matrix factorization
+- Built automated ETL pipelines using Apache Airflow and Python
+- Performed A/B testing and statistical analysis for product experiments
+- Developed dashboards using Tableau and Power BI for business stakeholders
+
+Data Analyst Intern | Analytics Co. | 2020 - 2021
+- Analyzed large datasets using SQL and Python (Pandas, NumPy)
+- Created data visualizations using Matplotlib, Seaborn, and Plotly
+- Built automated reporting pipelines using Python scripts
+
+EDUCATION
+Bachelor of Science in Computer Science | Stanford University | 2020
+- GPA: 3.8/4.0
+- Relevant Coursework: Machine Learning, Statistics, Algorithms, Database Systems
+
+TECHNICAL SKILLS
+Programming: Python, SQL, R, Scala, Bash
+ML/AI: Machine Learning, Deep Learning, NLP, Computer Vision, TensorFlow, PyTorch, Scikit-learn
+Data: Pandas, NumPy, Spark, Hadoop, Kafka, ETL
+Visualization: Matplotlib, Seaborn, Plotly, Tableau, Power BI
+Cloud/DevOps: AWS (EC2, S3, SageMaker, Lambda), Docker, Kubernetes, CI/CD, Git
+Databases: PostgreSQL, MySQL, MongoDB, Redis, Elasticsearch
+
+PROJECTS
+
+Real-time Fraud Detection System
+- Built ML pipeline detecting fraudulent transactions in real-time using Random Forest and XGBoost
+- Achieved 99.2% precision and deployed on AWS using Docker and FastAPI
+- Technologies: Python, Scikit-learn, AWS, Docker, Redis
+
+Customer Segmentation Engine
+- Developed K-Means and DBSCAN clustering models for customer behavior analysis
+- Built interactive Streamlit dashboard for business stakeholders
+- Technologies: Python, Pandas, Plotly, Streamlit, PostgreSQL
+
+CERTIFICATIONS
+- AWS Certified Machine Learning Specialty (2023)
+- Google Professional Data Engineer (2022)
+- TensorFlow Developer Certificate (2021)
 """
